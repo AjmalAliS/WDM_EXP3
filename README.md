@@ -1,5 +1,5 @@
 ### EX3 Implementation of GSP Algorithm In Python
-### DATE: 
+### DATE: 11/02/26
 ### AIM: To implement GSP Algorithm In Python.
 ### Description:
 The Generalized Sequential Pattern (GSP) algorithm is a data mining technique used for discovering frequent patterns within a sequence database. It operates by identifying sequences that frequently occur together. GSP works by employing a depth-first search strategy to explore and extract frequent patterns efficiently.
@@ -38,70 +38,100 @@ for each wear category.</p>
 </p>
 ### Program:
 
-```python
+```
 from collections import defaultdict
 from itertools import combinations
+import pandas as pd
+
 # Function to generate candidate k-item sequences
 def generate_candidates(dataset, k):
+    candidates = defaultdict(int)
+    for sequence in dataset:
+        for combination in combinations(sequence, k):
+            candidates[combination] += 1
+    return candidates
 
-
-    /WRITE YOUR CODE HERE/
-
-
-#Function to perform GSP algorithm
+# Function to perform GSP algorithm
 def gsp(dataset, min_support):
+    k = 1
+    frequent_patterns = defaultdict(int)
 
+    # Initially, find all frequent items (1-item sequences)
+    candidates = generate_candidates(dataset, k)
+    while candidates:
+        # Filter out candidates that don't meet the minimum support
+        for candidate, support in candidates.items():
+            if support >= min_support:
+                frequent_patterns[candidate] = support
 
-  /WRITE YOUR CODE HERE/
+        # Generate new candidates of length k+1
+        k += 1
+        candidates = generate_candidates(dataset, k)
 
+    return frequent_patterns
 
-#Example dataset for each category
-top_wear_data = [
- ["blouse", "t-shirt", "tank_top"],
- ["hoodie", "sweater", "top"],["hoodie"],["hoodie","sweater"]
- #Add more sequences for top wear
-]
-bottom_wear_data = [
- ["jeans", "trousers", "shorts"],
- ["leggings", "skirt", "chinos"],
- # Add more sequences for bottom wear
-]
-party_wear_data = [
- ["cocktail_dress", "evening_gown", "blazer"],
- ["party_dress", "formal_dress", "suit"],
- ["party_dress", "formal_dress", "suit"],
- ["party_dress", "formal_dress", "suit"],
- ["party_dress", "formal_dress", "suit"],
- ["party_dress"],["party_dress"],
- # Add more sequences for party wear
-]
-#Minimum support threshold
-min_support = 2
-#Perform GSP algorithm for each category
+    # Function to display patterns length-wise as separate tables
+def display_results_by_length(category, result):
+    print(f"\nFrequent Sequential Patterns - {category}")
+
+    if not result:
+        print("No frequent patterns found.")
+        return
+
+    max_length = max(len(pattern) for pattern in result.keys())
+
+    for length in range(1, max_length + 1):
+
+        # Filter patterns of current length
+        filtered_patterns = {
+            pattern: support
+            for pattern, support in result.items()
+            if len(pattern) == length
+        }
+
+        print(f"\n{length} Length Pattern")
+        print("-" * 40)
+
+        if filtered_patterns:
+            data = {
+                "Sequence": [str(pattern) for pattern in filtered_patterns.keys()],
+                "Support": list(filtered_patterns.values())
+            }
+            df = pd.DataFrame(data)
+            print(df.to_string(index=False))
+        else:
+            print("No frequent patterns")
+
+top_wear_data = [['a','b','c','b','e','c','f','g','a','b','e'],['a','d','b','c','c','f','g','c','h'],['b','c','a','d','e','b','f','c','d','f','g','h'],['c','e','c','e','h']]
+
+# Minimum support threshold
+min_support = 5
+
+# Perform GSP algorithm for each category
 top_wear_result = gsp(top_wear_data, min_support)
-bottom_wear_result = gsp(bottom_wear_data, min_support)
-party_wear_result = gsp(party_wear_data, min_support)
-#Output the frequent sequential patterns for each category
-print("Frequent Sequential Patterns - Top Wear:")
-if top_wear_result:
- for pattern, support in top_wear_result.items():
- print(f"Pattern: {pattern}, Support: {support}")
-else:
- print("No frequent sequential patterns found in Top Wear.")
-print("\nFrequent Sequential Patterns - Bottom Wear:")
-if bottom_wear_result:
- for pattern, support in bottom_wear_result.items():
- print(f"Pattern: {pattern}, Support: {support}")
-else:
- print("No frequent sequential patterns found in Bottom Wear.")
-print("\nFrequent Sequential Patterns - Party Wear:")
-if party_wear_result:
- for pattern, support in party_wear_result.items():
- print(f"Pattern: {pattern}, Support: {support}")
-else:
- print("No frequent sequential patterns found in Party Wear.")
+
+
+
+# Display the frequent sequential patterns as a table
+display_results_by_length('Top Wear', top_wear_result)
+
 ```
 ### Output:
+
+<img width="582" height="728" alt="image" src="https://github.com/user-attachments/assets/80941674-346f-477e-87b6-0946573bfb4d" />
+
+
+
+
+
+
+
+
+
+
+
+
+<img width="395" height="618" alt="image" src="https://github.com/user-attachments/assets/31b0262b-14bd-4e56-8050-1cd222b6a4a8" />
 
 ### Visualization:
 ```python
@@ -126,10 +156,12 @@ def visualize_patterns_line(result, category):
 
 # Visualize frequent sequential patterns for each category using a line plot
 visualize_patterns_line(top_wear_result, 'Top Wear')
-visualize_patterns_line(bottom_wear_result, 'Bottom Wear')
-visualize_patterns_line(party_wear_result, 'Party Wear')
+
 ```
 ### Output:
+<img width="1161" height="571" alt="image" src="https://github.com/user-attachments/assets/5f96cf06-b412-4fd6-8e3f-51cbc8835494" />
+
 
 
 ### Result:
+Thus the implementation of the GSP algorithm in python has been successfully executed.
